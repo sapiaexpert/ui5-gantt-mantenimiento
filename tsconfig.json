@@ -1,21 +1,16 @@
 {
-	"compilerOptions": {
-		"target": "es2023",
-		"module": "es2022",
-		"moduleResolution": "node",
-		"skipLibCheck": true,
-		"allowJs": true,
-		"strict": true,
-		"strictNullChecks": false,
-		"strictPropertyInitialization": false,
-		"rootDir": "./webapp",
-		"types": ["@sapui5/types", "@types/qunit"],
-		"paths": {
-			"com/mycompany/newapp/*": ["./webapp/*"],
-			"unit/*": ["./webapp/test/unit/*"],
-			"integration/*": ["./webapp/test/integration/*"]
-		}
-	},
-	"exclude": ["./webapp/test/e2e/**/*"],
-	"include": ["./webapp/**/*"]
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "strict": false,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "webapp/**/*"
+  ]
 }
