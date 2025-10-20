@@ -1,0 +1,119 @@
+_schema-version: '3.2'
+ID: ui5-gantt-maintenance
+version: 1.0.0
+description: SAP Maintenance Order Gantt Chart Application
+
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm install
+
+modules:
+  # UI5 Application Module
+  - name: ui5-gantt-maintenance-ui
+    type: html5
+    path: .
+    build-parameters:
+      builder: custom
+      commands:
+        - npm run build:cf
+      supported-platforms: []
+      build-result: dist
+    requires:
+      - name: ui5-gantt-maintenance-destination
+      - name: ui5-gantt-maintenance-uaa
+      - name: ui5-gantt-maintenance-html5-repo-runtime
+
+  # HTML5 Application Deployer
+  - name: ui5-gantt-maintenance-deployer
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: ui5-gantt-maintenance-html5-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - name: ui5-gantt-maintenance-ui
+          artifacts:
+            - dist
+          target-path: resources/
+
+  # Destination Configuration
+  - name: ui5-gantt-maintenance-destination-content
+    type: com.sap.application.content
+    requires:
+      - name: ui5-gantt-maintenance-destination
+        parameters:
+          content-target: true
+      - name: ui5-gantt-maintenance-html5-repo-host
+        parameters:
+          service-key:
+            name: ui5-gantt-maintenance-html5-repo-host-key
+      - name: ui5-gantt-maintenance-uaa
+        parameters:
+          service-key:
+            name: ui5-gantt-maintenance-uaa-key
+    parameters:
+      content:
+        instance:
+          destinations:
+            - Name: ui5_gantt_maintenance_html5_repo_host
+              ServiceInstanceName: ui5-gantt-maintenance-html5-repo-host
+              ServiceKeyName: ui5-gantt-maintenance-html5-repo-host-key
+              sap.cloud.service: ui5-gantt-maintenance
+            - Name: ui5_gantt_maintenance_uaa
+              Authentication: OAuth2UserTokenExchange
+              ServiceInstanceName: ui5-gantt-maintenance-uaa
+              ServiceKeyName: ui5-gantt-maintenance-uaa-key
+              sap.cloud.service: ui5-gantt-maintenance
+          existing_destinations_policy: update
+    build-parameters:
+      no-source: true
+
+resources:
+  # Destination Service
+  - name: ui5-gantt-maintenance-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: true
+        version: 1.0.0
+
+  # XSUAA Service
+  - name: ui5-gantt-maintenance-uaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: ui5-gantt-maintenance-${org}-${space}
+        tenant-mode: dedicated
+        role-collections:
+          - name: 'MaintenanceOrderViewer-${space}'
+            description: 'View Maintenance Orders in Gantt Chart'
+            role-template-references:
+              - $XSAPPNAME.Viewer
+
+  # HTML5 Application Repository Runtime
+  - name: ui5-gantt-maintenance-html5-repo-runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+
+  # HTML5 Application Repository Host
+  - name: ui5-gantt-maintenance-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host

@@ -1,18 +1,44 @@
-# build results
-dist
-coverage
-report
-.nyc_output
+# Node
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Build
+dist/
+resources/
+mta_archives/
+*.mtar
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# SAP
+.che/
+.gen/
+fioriHtmlRunner.html
+.*/fioriHtmlRunner.html
+mockserver.html
+visual_ext_index.html
+extended_runnable_file.html
+
+# Credentials (NEVER commit)
+.env
+.env.local
+default-env.json
 
 # Logs
-logs
+logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
-# Dependency directories
-node_modules/
+# Testing
+coverage/
+.nyc_output/
 
-.DS_Store
-.env
+# Temp
+.tmp/
+tmp/
