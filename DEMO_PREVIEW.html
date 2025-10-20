@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Diagrama de Gantt Mejorado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: '72', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .header {
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #1873b4;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        input, select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        input {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        select {
+            min-width: 180px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 150px;
+        }
+        
+        .stat-card.critical {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .stat-card.high {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .stat-card.avg {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .gantt-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .gantt-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .gantt-scroll {
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+        
+        .gantt-chart {
+            min-width: 1200px;
+        }
+        
+        .gantt-timeline-header {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #667eea;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .gantt-label-column {
+            width: 280px;
+            padding: 12px;
+            font-weight: bold;
+            border-right: 2px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+        
+        .gantt-dates {
+            display: flex;
+            flex: 1;
+        }
+        
+        .gantt-date {
+            width: 60px;
+            text-align: center;
+            padding: 8px 4px;
+            border-right: 1px solid #e8e8e8;
+            font-size: 11px;
+        }
+        
+        .gantt-date-day {
+            font-weight: bold;
+            font-size: 14px;
+            color: #667eea;
+        }
+        
+        .gantt-date-weekday {
+            color: #999;
+            text-transform: uppercase;
+            font-size: 9px;
+            margin-top: 2px;
+        }
+        
+        .gantt-row {
+            display: flex;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+        
+        .gantt-row:hover {
+            background: #fafafa;
+        }
+        
+        .gantt-row:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .gantt-row:nth-child(even):hover {
+            background: #f5f5f5;
+        }
+        
+        .gantt-row-label {
+            width: 280px;
+            padding: 12px;
+            border-right: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .gantt-order-id {
+            font-weight: bold;
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .gantt-equipment {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .gantt-row-timeline {
+            position: relative;
+            flex: 1;
+            padding: 10px 0;
+        }
+        
+        .gantt-grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+        }
+        
+        .gantt-grid-line {
+            width: 60px;
+            border-right: 1px solid #f5f5f5;
+        }
+        
+        .gantt-bar {
+            position: absolute;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            color: white;
+            font-size: 11px;
+            font-weight: 500;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        .gantt-bar:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+            z-index: 5;
+        }
+        
+        .gantt-bar.critical {
+            background: linear-gradient(135deg, #bb0000, #ee0000);
+        }
+        
+        .gantt-bar.high {
+            background: linear-gradient(135deg, #e78c07, #f5a623);
+        }
+        
+        .gantt-bar.medium {
+            background: linear-gradient(135deg, #2b7c2b, #5cb85c);
+        }
+        
+        .gantt-bar.low {
+            background: linear-gradient(135deg, #427cac, #5bc0de);
+        }
+        
+        .legend {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .legend-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .legend-items {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .legend-color.critical {
+            background: linear-gradient(135deg, #bb0000, #ee0000);
+        }
+        
+        .legend-color.high {
+            background: linear-gradient(135deg, #e78c07, #f5a623);
+        }
+        
+        .legend-color.medium {
+            background: linear-gradient(135deg, #2b7c2b, #5cb85c);
+        }
+        
+        .legend-color.low {
+            background: linear-gradient(135deg, #427cac, #5bc0de);
+        }
+        
+        .legend-text {
+            font-size: 13px;
+            color: #555;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Diagrama de Gantt - Órdenes de Mantenimiento</h1>
+            
+            <div class="filters">
+                <input type="search" placeholder="🔍 Buscar por equipo o descripción...">
+                <select>
+                    <option>Todas las prioridades</option>
+                    <option>Crítica</option>
+                    <option>Alta</option>
+                    <option>Media</option>
+                    <option>Baja</option>
+                </select>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Total Órdenes</div>
+                </div>
+                <div class="stat-card critical">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Críticas</div>
+                </div>
+                <div class="stat-card high">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Altas</div>
+                </div>
+                <div class="stat-card avg">
+                    <div class="stat-value">2.7</div>
+                    <div class="stat-label">Días Promedio</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="gantt-container">
+            <div class="gantt-header">
+                Cronograma de Mantenimiento - Octubre 2025
+            </div>
+            
+            <div class="gantt-scroll">
+                <div class="gantt-chart">
+                    <div class="gantt-timeline-header">
+                        <div class="gantt-label-column">Orden / Equipo</div>
+                        <div class="gantt-dates">
+                            <div class="gantt-date">
+                                <div class="gantt-date-day">14</div>
+                                <div class="gantt-date-weekday">LUN</div>
+                            </div>
+                            <div class="gantt-date">
+                                <div class="gantt-date-day">15</div>
+                                <div class="gantt-date-weekday">MAR</div>
+                            </div>
+                            <div class="gantt-date">
+                                <div class="gantt-date-day">16</div>
+                                <div class="gantt-date-weekday">MIÉ</div>
+                            </div>
+                            <div class="gantt-date">
+                                <div class="gantt-date-day">17</div>
+                                <div class="gantt-date-weekday">JUE</div>
+                            </div>
+                            <div class="gantt-date">
+                                <div class="gantt-date-day">18</div>
+                                <div class="gantt-date-weekday">VIE</div>
+                            </div>
+                            <div class="gantt-date">
+                                <div class="gantt-date-day">19</div>
+                                <div class="gantt-date-weekday">SÁB</div>
+                            </div>
+                            <div class="gantt-date">
+                                <div class="gantt-date-day">20</div>
+                                <div class="gantt-date-weekday">DOM</div>
+                            </div>
+                            <div class="gantt-date">
+                                <div class="gantt-date-day">21</div>
+                                <div class="gantt-date-weekday">LUN</div>
+                            </div>
+                            <div class="gantt-date">
+                                <div class="gantt-date-day">22</div>
+                                <div class="gantt-date-weekday">MAR</div>
+                            </div>
+                            <div class="gantt-date">
+                                <div class="gantt-date-day">23</div>
+                                <div class="gantt-date-weekday">MIÉ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-row-label">
+                            <div class="gantt-order-id">PM-2025-001</div>
+                            <div class="gantt-equipment">Bomba Centrífuga B-101</div>
+                        </div>
+                        <div class="gantt-row-timeline">
+                            <div class="gantt-grid-lines">
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                            </div>
+                            <div class="gantt-bar medium" style="left: 60px; width: 180px;" title="Mantenimiento preventivo trimestral">
+                                Mantenimiento preventivo...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-row-label">
+                            <div class="gantt-order-id">PM-2025-002</div>
+                            <div class="gantt-equipment">Compresor C-205</div>
+                        </div>
+                        <div class="gantt-row-timeline">
+                            <div class="gantt-grid-lines">
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                            </div>
+                            <div class="gantt-bar high" style="left: 120px; width: 180px;" title="Cambio de filtros y lubricación">
+                                Cambio de filtros y lubricación
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-row-label">
+                            <div class="gantt-order-id">PM-2025-004</div>
+                            <div class="gantt-equipment">Motor Eléctrico M-330</div>
+                        </div>
+                        <div class="gantt-row-timeline">
+                            <div class="gantt-grid-lines">
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                            </div>
+                            <div class="gantt-bar critical" style="left: 0px; width: 180px;" title="Reemplazo de rodamientos principales">
+                                Reemplazo de rodamientos...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-row-label">
+                            <div class="gantt-order-id">PM-2025-006</div>
+                            <div class="gantt-equipment">Intercambiador IC-550</div>
+                        </div>
+                        <div class="gantt-row-timeline">
+                            <div class="gantt-grid-lines">
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                            </div>
+                            <div class="gantt-bar high" style="left: 300px; width: 240px;" title="Limpieza química programada">
+                                Limpieza química programada
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="gantt-row">
+                        <div class="gantt-row-label">
+                            <div class="gantt-order-id">PM-2025-008</div>
+                            <div class="gantt-equipment">Bomba de Vacío BV-215</div>
+                        </div>
+                        <div class="gantt-row-timeline">
+                            <div class="gantt-grid-lines">
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                                <div class="gantt-grid-line"></div>
+                            </div>
+                            <div class="gantt-bar critical" style="left: 360px; width: 120px;" title="Reparación de sello mecánico">
+                                Reparación de sello...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-title">🎨 Leyenda de Prioridades</div>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color critical"></div>
+                        <div class="legend-text">Crítico</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color high"></div>
+                        <div class="legend-text">Alto</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color medium"></div>
+                        <div class="legend-text">Medio</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color low"></div>
+                        <div class="legend-text">Bajo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,30 +1,177 @@
 <mvc:View
-	controllerName="com.mycompany.newapp.controller.Main"
-	displayBlock="true"
-	xmlns="sap.m"
-	xmlns:mvc="sap.ui.core.mvc"
-	xmlns:core="sap.ui.core"
-	core:require="{
-		formatter: 'com/mycompany/newapp/model/formatter'
-	}">
+    controllerName="com.mycompany.newapp.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+    <Page
+        id="page"
+        title="Diagrama de Gantt - Órdenes de Mantenimiento">
+        <content>
+            <l:VerticalLayout class="sapUiContentPadding" width="100%">
+                
+                <!-- Header con filtros -->
+                <l:HorizontalLayout class="sapUiSmallMarginBottom">
+                    <SearchField
+                        id="searchField"
+                        width="300px"
+                        placeholder="Buscar por equipo o descripción..."
+                        search=".onSearch"
+                        class="sapUiSmallMarginEnd"/>
+                    <Select
+                        id="priorityFilter"
+                        width="150px"
+                        change=".onFilterChange"
+                        selectedKey="All">
+                        <items>
+                            <core:Item key="All" text="Todas las prioridades"/>
+                            <core:Item key="Critical" text="Crítica"/>
+                            <core:Item key="High" text="Alta"/>
+                            <core:Item key="Medium" text="Media"/>
+                            <core:Item key="Low" text="Baja"/>
+                        </items>
+                    </Select>
+                </l:HorizontalLayout>
 
-	<Page
-		title="{i18n>appTitle}"
-		id="page">
-		<content>
-			<IllustratedMessage
-				title="{i18n>appTitle}"
-				illustrationType="sapIllus-SuccessHighFive"
-				enableVerticalResponsiveness="true"
-				description="{i18n>appDescription}">
-				<additionalContent>
-					<Button
-						id="helloButton"
-						text="{formatter: 'formatter.formatValue', path: 'i18n>btnText'}"
-						press=".sayHello" />
-				</additionalContent>
-			</IllustratedMessage>
-		</content>
-	</Page>
+                <!-- Stats Cards -->
+                <l:HorizontalLayout class="sapUiSmallMarginBottom">
+                    <VBox class="sapUiSmallMarginEnd">
+                        <ObjectNumber
+                            number="{maintenanceModel>/stats/total}"
+                            unit="Órdenes"
+                            emphasized="true"
+                            state="Information"/>
+                        <Text text="Total" class="sapUiTinyMarginTop"/>
+                    </VBox>
+                    <VBox class="sapUiSmallMarginEnd">
+                        <ObjectNumber
+                            number="{maintenanceModel>/stats/critical}"
+                            emphasized="true"
+                            state="Error"/>
+                        <Text text="Críticas" class="sapUiTinyMarginTop"/>
+                    </VBox>
+                    <VBox class="sapUiSmallMarginEnd">
+                        <ObjectNumber
+                            number="{maintenanceModel>/stats/high}"
+                            emphasized="true"
+                            state="Warning"/>
+                        <Text text="Altas" class="sapUiTinyMarginTop"/>
+                    </VBox>
+                    <VBox>
+                        <ObjectNumber
+                            number="{maintenanceModel>/stats/avgDuration}"
+                            unit="días"
+                            emphasized="true"
+                            state="Success"/>
+                        <Text text="Duración Promedio" class="sapUiTinyMarginTop"/>
+                    </VBox>
+                </l:HorizontalLayout>
 
+                <!-- Gantt Chart Container -->
+                <Panel
+                    headerText="Cronograma de Mantenimiento - Noviembre 2025"
+                    class="sapUiResponsiveMargin"
+                    width="100%">
+                    <content>
+                        <ScrollContainer
+                            horizontal="true"
+                            vertical="false"
+                            height="600px"
+                            width="100%">
+                            <core:HTML
+                                id="ganttChart"
+                                content="{maintenanceModel>/ganttHTML}"/>
+                        </ScrollContainer>
+                    </content>
+                </Panel>
+
+                <!-- Lista de órdenes -->
+                <Panel
+                    headerText="Detalle de Órdenes"
+                    class="sapUiResponsiveMargin"
+                    expandable="true"
+                    expanded="false">
+                    <Table
+                        id="ordersTable"
+                        items="{
+                            path: 'maintenanceModel>/maintenanceOrders',
+                            sorter: {
+                                path: 'startDate'
+                            }
+                        }"
+                        growing="true"
+                        growingThreshold="20">
+                        <columns>
+                            <Column width="8em">
+                                <Text text="ID"/>
+                            </Column>
+                            <Column minScreenWidth="Tablet" demandPopin="true">
+                                <Text text="Equipo"/>
+                            </Column>
+                            <Column minScreenWidth="Desktop" demandPopin="true">
+                                <Text text="Descripción"/>
+                            </Column>
+                            <Column width="7em">
+                                <Text text="Prioridad"/>
+                            </Column>
+                            <Column width="9em">
+                                <Text text="Inicio"/>
+                            </Column>
+                            <Column width="9em">
+                                <Text text="Fin"/>
+                            </Column>
+                            <Column width="7em" hAlign="Center">
+                                <Text text="Duración"/>
+                            </Column>
+                            <Column minScreenWidth="Tablet" demandPopin="true">
+                                <Text text="Responsable"/>
+                            </Column>
+                            <Column minScreenWidth="Desktop" demandPopin="true">
+                                <Text text="Departamento"/>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem type="Active" press=".onOrderPress">
+                                <cells>
+                                    <ObjectIdentifier
+                                        title="{maintenanceModel>id}"
+                                        titleActive="true"/>
+                                    <Text text="{maintenanceModel>equipment}"/>
+                                    <Text text="{maintenanceModel>description}"/>
+                                    <ObjectStatus
+                                        text="{maintenanceModel>priority}"
+                                        state="{
+                                            path: 'maintenanceModel>priority',
+                                            formatter: '.formatter.formatPriorityState'
+                                        }"/>
+                                    <Text text="{
+                                        path: 'maintenanceModel>startDate',
+                                        type: 'sap.ui.model.type.Date',
+                                        formatOptions: {
+                                            pattern: 'dd/MM/yyyy'
+                                        }
+                                    }"/>
+                                    <Text text="{
+                                        path: 'maintenanceModel>endDate',
+                                        type: 'sap.ui.model.type.Date',
+                                        formatOptions: {
+                                            pattern: 'dd/MM/yyyy'
+                                        }
+                                    }"/>
+                                    <ObjectNumber
+                                        number="{maintenanceModel>duration}"
+                                        unit="días"
+                                        emphasized="false"/>
+                                    <Text text="{maintenanceModel>responsible}"/>
+                                    <Text text="{maintenanceModel>department}"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </Panel>
+
+            </l:VerticalLayout>
+        </content>
+    </Page>
 </mvc:View>

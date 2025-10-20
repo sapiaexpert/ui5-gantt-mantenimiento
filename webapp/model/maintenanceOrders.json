@@ -1,0 +1,136 @@
+{
+  "maintenanceOrders": [
+    {
+      "id": "PM-2025-001",
+      "equipment": "Bomba Centrífuga B-101",
+      "description": "Mantenimiento preventivo trimestral",
+      "startDate": "2025-10-15",
+      "endDate": "2025-10-18",
+      "duration": 3,
+      "priority": "Medium",
+      "responsible": "Juan Pérez",
+      "department": "Mecánica"
+    },
+    {
+      "id": "PM-2025-002",
+      "equipment": "Compresor C-205",
+      "description": "Cambio de filtros y lubricación",
+      "startDate": "2025-10-16",
+      "endDate": "2025-10-19",
+      "duration": 3,
+      "priority": "High",
+      "responsible": "María González",
+      "department": "Operaciones"
+    },
+    {
+      "id": "PM-2025-003",
+      "equipment": "Transformador T-450",
+      "description": "Inspección termográfica anual",
+      "startDate": "2025-10-18",
+      "endDate": "2025-10-20",
+      "duration": 2,
+      "priority": "Low",
+      "responsible": "Carlos Rodríguez",
+      "department": "Eléctrica"
+    },
+    {
+      "id": "PM-2025-004",
+      "equipment": "Motor Eléctrico M-330",
+      "description": "Reemplazo de rodamientos principales",
+      "startDate": "2025-10-14",
+      "endDate": "2025-10-17",
+      "duration": 3,
+      "priority": "Critical",
+      "responsible": "Ana Martínez",
+      "department": "Mecánica"
+    },
+    {
+      "id": "PM-2025-005",
+      "equipment": "Válvula de Control V-120",
+      "description": "Calibración y ajuste de actuadores",
+      "startDate": "2025-10-22",
+      "endDate": "2025-10-24",
+      "duration": 2,
+      "priority": "Medium",
+      "responsible": "Luis Fernández",
+      "department": "Instrumentación"
+    },
+    {
+      "id": "PM-2025-006",
+      "equipment": "Intercambiador de Calor IC-550",
+      "description": "Limpieza química programada",
+      "startDate": "2025-10-19",
+      "endDate": "2025-10-23",
+      "duration": 4,
+      "priority": "High",
+      "responsible": "Roberto Silva",
+      "department": "Operaciones"
+    },
+    {
+      "id": "PM-2025-007",
+      "equipment": "Panel Eléctrico PE-880",
+      "description": "Mantenimiento preventivo semestral",
+      "startDate": "2025-10-25",
+      "endDate": "2025-10-27",
+      "duration": 2,
+      "priority": "High",
+      "responsible": "Patricia Díaz",
+      "department": "Eléctrica"
+    },
+    {
+      "id": "PM-2025-008",
+      "equipment": "Bomba de Vacío BV-215",
+      "description": "Reparación de sello mecánico",
+      "startDate": "2025-10-20",
+      "endDate": "2025-10-22",
+      "duration": 2,
+      "priority": "Critical",
+      "responsible": "Miguel Torres",
+      "department": "Mecánica"
+    },
+    {
+      "id": "PM-2025-009",
+      "equipment": "Sistema HVAC H-670",
+      "description": "Cambio de filtros y revisión general",
+      "startDate": "2025-10-28",
+      "endDate": "2025-10-30",
+      "duration": 2,
+      "priority": "Medium",
+      "responsible": "Carmen Ruiz",
+      "department": "Operaciones"
+    },
+    {
+      "id": "PM-2025-010",
+      "equipment": "Torre de Enfriamiento TE-410",
+      "description": "Limpieza y tratamiento de agua",
+      "startDate": "2025-10-17",
+      "endDate": "2025-10-21",
+      "duration": 4,
+      "priority": "Medium",
+      "responsible": "Fernando López",
+      "department": "Operaciones"
+    },
+    {
+      "id": "PM-2025-011",
+      "equipment": "Reductor de Velocidad RV-335",
+      "description": "Cambio de aceite y análisis de vibraciones",
+      "startDate": "2025-10-23",
+      "endDate": "2025-10-26",
+      "duration": 3,
+      "priority": "High",
+      "responsible": "Laura Sánchez",
+      "department": "Mecánica"
+    },
+    {
+      "id": "PM-2025-012",
+      "equipment": "UPS Sistema-A",
+      "description": "Prueba de baterías y mantenimiento preventivo",
+      "startDate": "2025-10-21",
+      "endDate": "2025-10-23",
+      "duration": 2,
+      "priority": "Critical",
+      "responsible": "Diego Ramírez",
+      "department": "Eléctrica"
+    }
+  ]
+}
