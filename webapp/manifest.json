@@ -11,7 +11,7 @@
     },
     "dataSources": {
       "maintenanceOrderService": {
-        "uri": "/sap/opu/odata/sap/API_MAINTENANCEORDER/",
+        "uri": "/sap/opu/odata/sap/API_MAINTENANCEORDER;v=2/",
         "type": "OData",
         "settings": {
           "odataVersion": "2.0",
