@@ -11,10 +11,10 @@
     },
     "dataSources": {
       "maintenanceOrderService": {
-        "uri": "/sap/opu/odata4/sap/api_maintenanceorder/srvd/sap/api_maintenanceorder/0001/",
+        "uri": "/sap/opu/odata/sap/API_MAINTENANCEORDER/",
         "type": "OData",
         "settings": {
-          "odataVersion": "4.0",
+          "odataVersion": "2.0",
           "localUri": "localService/metadata.xml"
         }
       }
