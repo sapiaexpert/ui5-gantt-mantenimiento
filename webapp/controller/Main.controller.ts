@@ -108,7 +108,7 @@ export default class Main extends BaseController {
             .filter(o => o.MaintOrdBasicStartDate && o.MaintOrdBasicEndDate)
             .map(order => ({
                 id: order.MaintenanceOrder,
-                title: `${order.MaintenanceOrderDesc || 'Sin descripción'}`,
+                title: `${order.MaintenanceOrderDesc || 'Sin descripción'}`.substring(0, 50),
                 start: new Date(order.MaintOrdBasicStartDate),
                 end: new Date(order.MaintOrdBasicEndDate),
                 priority: order.MaintPriority || "3",
@@ -118,7 +118,38 @@ export default class Main extends BaseController {
 
         console.log("📊 Tareas Gantt preparadas:", ganttTasks.length);
 
-        const oGanttModel = new JSONModel({ tasks: ganttTasks });
+        // Calcular horizontes para el timeline
+        let minDate: Date;
+        let maxDate: Date;
+        
+        if (ganttTasks.length > 0) {
+            const dates = ganttTasks.flatMap(t => [t.start.getTime(), t.end.getTime()]);
+            minDate = new Date(Math.min(...dates));
+            maxDate = new Date(Math.max(...dates));
+            
+            // Agregar margen de 7 días a cada lado
+            minDate.setDate(minDate.getDate() - 7);
+            maxDate.setDate(maxDate.getDate() + 7);
+        } else {
+            // Si no hay tareas, usar fechas por defecto
+            minDate = new Date();
+            maxDate = new Date();
+            maxDate.setMonth(maxDate.getMonth() + 3);
+        }
+
+        const oGanttModel = new JSONModel({
+            tasks: ganttTasks,
+            totalHorizon: {
+                startTime: minDate.toISOString(),
+                endTime: maxDate.toISOString()
+            },
+            visibleHorizon: {
+                startTime: minDate.toISOString(),
+                endTime: maxDate.toISOString()
+            }
+        });
+        
         this.getView()?.setModel(oGanttModel, "ganttModel");
+        console.log("🎨 Gantt Chart configurado con", ganttTasks.length, "tareas");
     }
 }

@@ -2,6 +2,10 @@
     controllerName="com.sap.gantt.maintenance.controller.Main"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
+    xmlns:gantt="sap.gantt.simple"
+    xmlns:axistime="sap.gantt.axistime"
+    xmlns:table="sap.ui.table"
+    xmlns:core="sap.ui.core"
     displayBlock="true"
     height="100%">
     
@@ -57,52 +61,83 @@
                     class="sapUiTinyMarginBegin"/>
             </Toolbar>
             
-            <!-- Cronograma Visual -->
+            <!-- GANTT CHART VISUAL REAL -->
             <VBox class="sapUiSmallMargin">
-                <Title text="Cronograma Visual ({ganttModel>/tasks/length} tareas)" level="H2"/>
+                <Title text="Cronograma de Mantenimiento ({ganttModel>/tasks/length} tareas)" level="H2"/>
                 
-                <Panel headerText="Timeline de Órdenes" expandable="true" expanded="true">
-                    <List
-                        items="{ganttModel>/tasks}"
-                        noDataText="No hay tareas en el rango seleccionado">
-                        <CustomListItem>
-                            <VBox width="100%" class="sapUiSmallMarginTop sapUiSmallMarginBottom">
-                                <!-- Información de la tarea -->
-                                <HBox justifyContent="SpaceBetween" alignItems="Center">
-                                    <VBox>
-                                        <Label text="{ganttModel>id}" design="Bold"/>
-                                        <Text text="{ganttModel>title}"/>
-                                    </VBox>
-                                    <ObjectStatus
-                                        text="Prioridad {ganttModel>priority}"
-                                        state="{= ${ganttModel>priority} === '1' ? 'Error' : ${ganttModel>priority} === '2' ? 'Warning' : 'Success' }"/>
-                                </HBox>
-                                
-                                <!-- Barra de progreso temporal -->
-                                <ProgressIndicator
-                                    width="100%"
-                                    percentValue="75"
-                                    displayValue="{
-                                        parts: [
-                                            {path: 'ganttModel>start'},
-                                            {path: 'ganttModel>end'}
-                                        ],
-                                        formatter: '.formatDateRange'
-                                    }"
-                                    state="{= ${ganttModel>priority} === '1' ? 'Error' : ${ganttModel>priority} === '2' ? 'Warning' : 'Success' }"
-                                    class="sapUiSmallMarginTop"/>
-                                
-                                <HBox class="sapUiTinyMarginTop">
-                                    <Text text="Equipo: {ganttModel>equipment}" class="sapUiSmallMarginEnd"/>
-                                    <Text text="Planta: {ganttModel>plant}"/>
-                                </HBox>
-                            </VBox>
-                        </CustomListItem>
-                    </List>
-                </Panel>
+                <gantt:GanttChartWithTable
+                    id="ganttChart"
+                    height="600px"
+                    width="100%"
+                    rows="{ganttModel>/tasks}">
+                    
+                    <!-- Configuración del Timeline -->
+                    <gantt:axisTimeStrategy>
+                        <axistime:ProportionZoomStrategy
+                            totalHorizon="{ganttModel>/totalHorizon}"
+                            visibleHorizon="{ganttModel>/visibleHorizon}"
+                            mouseWheelZoomType="FineGranular"
+                            zoomControlType="SliderOnly"
+                            initialZoomLevel="0"/>
+                    </gantt:axisTimeStrategy>
+                    
+                    <!-- Tabla lateral con información -->
+                    <gantt:table>
+                        <table:Table
+                            rows="{ganttModel>/tasks}"
+                            selectionMode="Single"
+                            width="400px"
+                            fixedColumnCount="2"
+                            visibleRowCountMode="Auto">
+                            <table:columns>
+                                <table:Column width="80px">
+                                    <Label text="Orden"/>
+                                    <table:template>
+                                        <Text text="{ganttModel>id}" wrapping="false"/>
+                                    </table:template>
+                                </table:Column>
+                                <table:Column width="200px">
+                                    <Label text="Descripción"/>
+                                    <table:template>
+                                        <Text text="{ganttModel>title}" wrapping="false"/>
+                                    </table:template>
+                                </table:Column>
+                                <table:Column width="60px">
+                                    <Label text="Prior."/>
+                                    <table:template>
+                                        <ObjectStatus
+                                            text="{ganttModel>priority}"
+                                            state="{= ${ganttModel>priority} === '1' ? 'Error' : ${ganttModel>priority} === '2' ? 'Warning' : 'Success' }"/>
+                                    </table:template>
+                                </table:Column>
+                            </table:columns>
+                        </table:Table>
+                    </gantt:table>
+                    
+                    <!-- Filas del Gantt con barras -->
+                    <gantt:rows>
+                        <gantt:BaseRow>
+                            <gantt:shapes1>
+                                <gantt:BaseRectangle
+                                    shapeId="{ganttModel>id}"
+                                    time="{ganttModel>start}"
+                                    endTime="{ganttModel>end}"
+                                    title="{ganttModel>title}"
+                                    fill="{= ${ganttModel>priority} === '1' ? '#bb0000' : ${ganttModel>priority} === '2' ? '#ff9500' : '#5899da' }"
+                                    selectable="true"
+                                    showTitle="false"
+                                    height="20"
+                                    animationSettings="{
+                                        enable: true
+                                    }"/>
+                            </gantt:shapes1>
+                        </gantt:BaseRow>
+                    </gantt:rows>
+                    
+                </gantt:GanttChartWithTable>
                 
                 <MessageStrip
-                    text="📊 Visualización temporal de órdenes de mantenimiento. Las barras muestran las tareas filtradas por fecha."
+                    text="🎨 Gráfico Gantt interactivo: Use scroll horizontal para navegar, rueda del mouse para zoom. Colores: Rojo=Prioridad 1, Naranja=Prioridad 2, Azul=Otras"
                     type="Information"
                     showIcon="true"
                     class="sapUiSmallMarginTop"/>
