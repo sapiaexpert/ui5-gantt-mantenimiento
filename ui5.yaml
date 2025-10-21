@@ -1,6 +1,6 @@
-specVersion: "4.0"
+specVersion: "3.2"
 metadata:
-  name: com.mycompany.newapp
+  name: com.sap.gantt.maintenance
 type: application
 framework:
   name: SAPUI5

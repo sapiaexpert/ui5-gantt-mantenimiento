@@ -1,7 +1,7 @@
 import BaseController from "./BaseController";
 
 /**
- * @namespace com.mycompany.newapp.controller
+ * @namespace com.sap.gantt.maintenance.controller
  */
 export default class App extends BaseController {
 	public onInit(): void {

@@ -3,7 +3,7 @@ import models from "./model/models";
 import Device from "sap/ui/Device";
 
 /**
- * @namespace com.mycompany.newapp
+ * @namespace com.sap.gantt.maintenance
  */
 export default class Component extends UIComponent {
 	public static metadata = {

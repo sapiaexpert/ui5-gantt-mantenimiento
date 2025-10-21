@@ -1,7 +1,7 @@
 {
   "_version": "1.59.0",
   "sap.app": {
-    "id": "com.sap.gantt.maintenance",
+    "id": "com.sap.gantt.maintenance.v12",
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "title": "{{appTitle}}",
@@ -57,6 +57,7 @@
         }
       },
       "": {
+        "type": "sap.ui.model.odata.v2.ODataModel",
         "dataSource": "maintenanceOrderService",
         "preload": true,
         "settings": {
@@ -84,7 +85,7 @@
       ],
       "targets": {
         "main": {
-          "viewName": "MainView",
+          "viewName": "Main",
           "viewId": "mainView",
           "viewLevel": 1
         }

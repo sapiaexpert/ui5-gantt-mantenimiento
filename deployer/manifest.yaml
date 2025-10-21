@@ -1,0 +1,5 @@
+---
+applications:
+- name: ui5ganttmaintenance
+  path: ../dist
+  buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git

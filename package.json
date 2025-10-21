@@ -20,9 +20,10 @@
   },
   "devDependencies": {
     "@sap/ux-ui5-tooling": "^1.14.0",
-    "@ui5/cli": "^3.9.0",
+    "@ui5/cli": "^3.11.11",
     "eslint": "^8.57.0",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.5",
+    "ui5-tooling-transpile": "^3.9.2"
   },
   "ui5": {
     "dependencies": [

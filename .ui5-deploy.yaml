@@ -1,0 +1,13 @@
+specVersion: "3.2"
+metadata:
+  name: ui5-gantt-maintenance-deployer
+type: application
+resources:
+  configuration:
+    paths:
+      webapp: dist
+builder:
+  resources:
+    excludes:
+      - "/test/**"
+      - "/localService/**"

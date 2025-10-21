@@ -1,5 +1,5 @@
 <mvc:View
-	controllerName="com.mycompany.newapp.controller.App"
+	controllerName="com.sap.gantt.maintenance.controller.App"
 	displayBlock="true"
 	xmlns="sap.m"
 	xmlns:mvc="sap.ui.core.mvc">

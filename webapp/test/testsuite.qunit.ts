@@ -1,5 +1,5 @@
 export default {
-	name: "QUnit test suite for the UI5 Application: com.mycompany.newapp",
+	name: "QUnit test suite for the UI5 Application: com.sap.gantt.maintenance",
 	defaults: {
 		page: "ui5://test-resources/com/mycompany/newapp/Test.qunit.html?testsuite={suite}&test={name}",
 		qunit: {
@@ -24,10 +24,10 @@ export default {
 	},
 	tests: {
 		"unit/unitTests": {
-			title: "Unit tests for com.mycompany.newapp"
+			title: "Unit tests for com.sap.gantt.maintenance"
 		},
 		"integration/opaTests": {
-			title: "Integration tests for com.mycompany.newapp"
+			title: "Integration tests for com.sap.gantt.maintenance"
 		}
 	}
 };

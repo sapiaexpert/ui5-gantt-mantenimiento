@@ -1,177 +1,161 @@
 <mvc:View
-    controllerName="com.mycompany.newapp.controller.Main"
+    controllerName="com.sap.gantt.maintenance.controller.Main"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
-    xmlns:l="sap.ui.layout"
-    xmlns:core="sap.ui.core"
-    displayBlock="true">
+    displayBlock="true"
+    height="100%">
+    
     <Page
-        id="page"
-        title="Diagrama de Gantt - Órdenes de Mantenimiento">
+        id="mainPage"
+        title="Diagrama de Gantt - Órdenes de Mantenimiento"
+        showNavButton="false">
+        
         <content>
-            <l:VerticalLayout class="sapUiContentPadding" width="100%">
+            <!-- Stats Cards -->
+            <HBox class="sapUiSmallMargin">
+                <VBox class="sapUiSmallMarginEnd">
+                    <ObjectStatus
+                        title="Total Órdenes"
+                        text="{statsModel>/total}"
+                        state="Information"/>
+                </VBox>
+                <VBox class="sapUiSmallMarginEnd">
+                    <ObjectStatus
+                        title="Filtradas"
+                        text="{statsModel>/filtered}"
+                        state="Success"/>
+                </VBox>
+                <VBox class="sapUiSmallMarginEnd">
+                    <ObjectStatus
+                        title="Última Carga"
+                        text="{statsModel>/loaded}"
+                        state="None"/>
+                </VBox>
+            </HBox>
+            
+            <!-- Filtro de Fechas -->
+            <Toolbar class="sapUiSmallMargin">
+                <Label text="Fecha Inicio entre:" design="Bold"/>
+                <DatePicker
+                    id="startDatePicker"
+                    value="{filterModel>/startDate}"
+                    displayFormat="dd/MM/yyyy"
+                    width="150px"
+                    class="sapUiTinyMarginBegin"/>
+                <Label text="y" class="sapUiTinyMarginBegin"/>
+                <DatePicker
+                    id="endDatePicker"
+                    value="{filterModel>/endDate}"
+                    displayFormat="dd/MM/yyyy"
+                    width="150px"
+                    class="sapUiTinyMarginBegin"/>
+                <Button
+                    text="Filtrar"
+                    press=".onFilterByDate"
+                    type="Emphasized"
+                    icon="sap-icon://filter"
+                    class="sapUiTinyMarginBegin"/>
+            </Toolbar>
+            
+            <!-- Cronograma Visual -->
+            <VBox class="sapUiSmallMargin">
+                <Title text="Cronograma Visual ({ganttModel>/tasks/length} tareas)" level="H2"/>
                 
-                <!-- Header con filtros -->
-                <l:HorizontalLayout class="sapUiSmallMarginBottom">
-                    <SearchField
-                        id="searchField"
-                        width="300px"
-                        placeholder="Buscar por equipo o descripción..."
-                        search=".onSearch"
-                        class="sapUiSmallMarginEnd"/>
-                    <Select
-                        id="priorityFilter"
-                        width="150px"
-                        change=".onFilterChange"
-                        selectedKey="All">
-                        <items>
-                            <core:Item key="All" text="Todas las prioridades"/>
-                            <core:Item key="Critical" text="Crítica"/>
-                            <core:Item key="High" text="Alta"/>
-                            <core:Item key="Medium" text="Media"/>
-                            <core:Item key="Low" text="Baja"/>
-                        </items>
-                    </Select>
-                </l:HorizontalLayout>
-
-                <!-- Stats Cards -->
-                <l:HorizontalLayout class="sapUiSmallMarginBottom">
-                    <VBox class="sapUiSmallMarginEnd">
-                        <ObjectNumber
-                            number="{maintenanceModel>/stats/total}"
-                            unit="Órdenes"
-                            emphasized="true"
-                            state="Information"/>
-                        <Text text="Total" class="sapUiTinyMarginTop"/>
-                    </VBox>
-                    <VBox class="sapUiSmallMarginEnd">
-                        <ObjectNumber
-                            number="{maintenanceModel>/stats/critical}"
-                            emphasized="true"
-                            state="Error"/>
-                        <Text text="Críticas" class="sapUiTinyMarginTop"/>
-                    </VBox>
-                    <VBox class="sapUiSmallMarginEnd">
-                        <ObjectNumber
-                            number="{maintenanceModel>/stats/high}"
-                            emphasized="true"
-                            state="Warning"/>
-                        <Text text="Altas" class="sapUiTinyMarginTop"/>
-                    </VBox>
-                    <VBox>
-                        <ObjectNumber
-                            number="{maintenanceModel>/stats/avgDuration}"
-                            unit="días"
-                            emphasized="true"
-                            state="Success"/>
-                        <Text text="Duración Promedio" class="sapUiTinyMarginTop"/>
-                    </VBox>
-                </l:HorizontalLayout>
-
-                <!-- Gantt Chart Container -->
-                <Panel
-                    headerText="Cronograma de Mantenimiento - Noviembre 2025"
-                    class="sapUiResponsiveMargin"
-                    width="100%">
-                    <content>
-                        <ScrollContainer
-                            horizontal="true"
-                            vertical="false"
-                            height="600px"
-                            width="100%">
-                            <core:HTML
-                                id="ganttChart"
-                                content="{maintenanceModel>/ganttHTML}"/>
-                        </ScrollContainer>
-                    </content>
-                </Panel>
-
-                <!-- Lista de órdenes -->
-                <Panel
-                    headerText="Detalle de Órdenes"
-                    class="sapUiResponsiveMargin"
-                    expandable="true"
-                    expanded="false">
-                    <Table
-                        id="ordersTable"
-                        items="{
-                            path: 'maintenanceModel>/maintenanceOrders',
-                            sorter: {
-                                path: 'startDate'
-                            }
-                        }"
-                        growing="true"
-                        growingThreshold="20">
-                        <columns>
-                            <Column width="8em">
-                                <Text text="ID"/>
-                            </Column>
-                            <Column minScreenWidth="Tablet" demandPopin="true">
-                                <Text text="Equipo"/>
-                            </Column>
-                            <Column minScreenWidth="Desktop" demandPopin="true">
-                                <Text text="Descripción"/>
-                            </Column>
-                            <Column width="7em">
-                                <Text text="Prioridad"/>
-                            </Column>
-                            <Column width="9em">
-                                <Text text="Inicio"/>
-                            </Column>
-                            <Column width="9em">
-                                <Text text="Fin"/>
-                            </Column>
-                            <Column width="7em" hAlign="Center">
-                                <Text text="Duración"/>
-                            </Column>
-                            <Column minScreenWidth="Tablet" demandPopin="true">
-                                <Text text="Responsable"/>
-                            </Column>
-                            <Column minScreenWidth="Desktop" demandPopin="true">
-                                <Text text="Departamento"/>
-                            </Column>
-                        </columns>
-                        <items>
-                            <ColumnListItem type="Active" press=".onOrderPress">
-                                <cells>
-                                    <ObjectIdentifier
-                                        title="{maintenanceModel>id}"
-                                        titleActive="true"/>
-                                    <Text text="{maintenanceModel>equipment}"/>
-                                    <Text text="{maintenanceModel>description}"/>
+                <Panel headerText="Timeline de Órdenes" expandable="true" expanded="true">
+                    <List
+                        items="{ganttModel>/tasks}"
+                        noDataText="No hay tareas en el rango seleccionado">
+                        <CustomListItem>
+                            <VBox width="100%" class="sapUiSmallMarginTop sapUiSmallMarginBottom">
+                                <!-- Información de la tarea -->
+                                <HBox justifyContent="SpaceBetween" alignItems="Center">
+                                    <VBox>
+                                        <Label text="{ganttModel>id}" design="Bold"/>
+                                        <Text text="{ganttModel>title}"/>
+                                    </VBox>
                                     <ObjectStatus
-                                        text="{maintenanceModel>priority}"
-                                        state="{
-                                            path: 'maintenanceModel>priority',
-                                            formatter: '.formatter.formatPriorityState'
-                                        }"/>
-                                    <Text text="{
-                                        path: 'maintenanceModel>startDate',
-                                        type: 'sap.ui.model.type.Date',
-                                        formatOptions: {
-                                            pattern: 'dd/MM/yyyy'
-                                        }
-                                    }"/>
-                                    <Text text="{
-                                        path: 'maintenanceModel>endDate',
-                                        type: 'sap.ui.model.type.Date',
-                                        formatOptions: {
-                                            pattern: 'dd/MM/yyyy'
-                                        }
-                                    }"/>
-                                    <ObjectNumber
-                                        number="{maintenanceModel>duration}"
-                                        unit="días"
-                                        emphasized="false"/>
-                                    <Text text="{maintenanceModel>responsible}"/>
-                                    <Text text="{maintenanceModel>department}"/>
-                                </cells>
-                            </ColumnListItem>
-                        </items>
-                    </Table>
+                                        text="Prioridad {ganttModel>priority}"
+                                        state="{= ${ganttModel>priority} === '1' ? 'Error' : ${ganttModel>priority} === '2' ? 'Warning' : 'Success' }"/>
+                                </HBox>
+                                
+                                <!-- Barra de progreso temporal -->
+                                <ProgressIndicator
+                                    width="100%"
+                                    percentValue="75"
+                                    displayValue="{
+                                        parts: [
+                                            {path: 'ganttModel>start'},
+                                            {path: 'ganttModel>end'}
+                                        ],
+                                        formatter: '.formatDateRange'
+                                    }"
+                                    state="{= ${ganttModel>priority} === '1' ? 'Error' : ${ganttModel>priority} === '2' ? 'Warning' : 'Success' }"
+                                    class="sapUiSmallMarginTop"/>
+                                
+                                <HBox class="sapUiTinyMarginTop">
+                                    <Text text="Equipo: {ganttModel>equipment}" class="sapUiSmallMarginEnd"/>
+                                    <Text text="Planta: {ganttModel>plant}"/>
+                                </HBox>
+                            </VBox>
+                        </CustomListItem>
+                    </List>
                 </Panel>
-
-            </l:VerticalLayout>
+                
+                <MessageStrip
+                    text="📊 Visualización temporal de órdenes de mantenimiento. Las barras muestran las tareas filtradas por fecha."
+                    type="Information"
+                    showIcon="true"
+                    class="sapUiSmallMarginTop"/>
+            </VBox>
+            
+            <!-- Orders Table -->
+            <VBox class="sapUiSmallMargin">
+                <Title text="Detalle de Órdenes ({ordersModel>/orders/length})" level="H3"/>
+                <Table
+                    id="ordersTable"
+                    items="{ordersModel>/orders}"
+                    growing="true"
+                    growingThreshold="20">
+                    <columns>
+                        <Column width="8em"><Text text="ID"/></Column>
+                        <Column width="10em"><Text text="Equipo"/></Column>
+                        <Column minScreenWidth="Tablet" demandPopin="true"><Text text="Descripción"/></Column>
+                        <Column minScreenWidth="Tablet" demandPopin="true" width="8em"><Text text="Prioridad"/></Column>
+                        <Column minScreenWidth="Desktop" demandPopin="true" width="10em"><Text text="Inicio"/></Column>
+                        <Column minScreenWidth="Desktop" demandPopin="true" width="10em"><Text text="Fin"/></Column>
+                        <Column minScreenWidth="Desktop" demandPopin="true" width="8em"><Text text="Duración"/></Column>
+                        <Column minScreenWidth="Desktop" demandPopin="true" width="10em"><Text text="Responsable"/></Column>
+                        <Column minScreenWidth="Desktop" demandPopin="true"><Text text="Departamento"/></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <ObjectIdentifier
+                                    title="{ordersModel>MaintenanceOrder}"
+                                    text="{ordersModel>MaintenanceOrderType}"/>
+                                <Text text="{ordersModel>EquipmentName}"/>
+                                <Text text="{ordersModel>MaintenanceOrderDesc}"/>
+                                <ObjectStatus
+                                    text="{ordersModel>MaintPriority}"
+                                    state="{= ${ordersModel>MaintPriority} === '1' ? 'Error' : ${ordersModel>MaintPriority} === '2' ? 'Warning' : 'Success' }"/>
+                                <Text text="{
+                                    path: 'ordersModel>MaintOrdBasicStartDate',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: { pattern: 'dd/MM/yyyy' }
+                                }"/>
+                                <Text text="{
+                                    path: 'ordersModel>MaintOrdBasicEndDate',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: { pattern: 'dd/MM/yyyy' }
+                                }"/>
+                                <Text text="-"/>
+                                <Text text="{ordersModel>MaintOrdPersonResponsible}"/>
+                                <Text text="{ordersModel>MaintenancePlant}"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
         </content>
     </Page>
 </mvc:View>
